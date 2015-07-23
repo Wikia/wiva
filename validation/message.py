@@ -8,8 +8,8 @@ class Message(object):
     WARNING = 'WARNING'
 
     COLORS = {
-        ERROR: ('red', None, 'bold'),
-        WARNING: ('yellow', None, 'bold')
+        ERROR: ('red', None, ('bold',)),
+        WARNING: ('yellow', None, ('bold',))
     }
 
     def __init__(self, source_text, severity, text, start, end=None):
@@ -19,7 +19,13 @@ class Message(object):
         self.start = start
         self.end = end
 
-    def __str__(self):
+    def __emphasize(self, text):
+        if not self.severity in self.COLORS:
+            return text
+        return termcolor.colored(text, *self.COLORS[self.severity])
+
+
+    def __unicode__(self):
         source_text = self.source_text
         length = len(source_text)
         start = self.start
@@ -32,7 +38,7 @@ class Message(object):
             line_start += 1
         line_end = source_text.find("\n", end, min(end + self.MAX_LINE_LENGTH, length))
         if line_end == -1:
-            line_end = length
+            line_end = min(end + self.MAX_LINE_LENGTH, length)
         elif source_text[line_end - 1] == "\r":
             line_end -= 1
 
@@ -41,14 +47,19 @@ class Message(object):
             source_text[start:end],
             source_text[end:line_end])
 
-        text_msg = "{}: {}".format(self.severity, self.text)
-        if self.severity in self.COLORS:
-            text_msg = termcolor.colored(text_msg, self.COLORS[self.severity])
-        text_msg += "\n"
-        text_msg += "  {}{}{}\n".format(before, mark, after)
-        text_msg += "  {}{}\n".format(' ' * len(before), '^' * len(mark))
+        text = ''.join([
+            self.__emphasize(u"{}: {}".format(self.severity, self.text)),
+            u"\n",
+            u"  {}{}{}".format(before, mark, after),
+            u"\n",
+            u"  {}{}".format(' ' * len(before), self.__emphasize('^' * len(mark))),
+            u"\n",
+        ])
 
-        return text_msg
+        return text
+
+    def __str__(self):
+        return self.__unicode__().encode('utf-8')
 
     def __each_expand_tabs(self, *args):
         return map(self.__expand_tabs, args)
