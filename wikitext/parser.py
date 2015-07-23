@@ -141,4 +141,4 @@ parser = yacc.yacc(start='article')
 
 
 def parse(text):
-    return parser.parse(text, lexer=lex, debug=logging.getLogger())
+    return parser.parse(text, lexer=lexer, debug=logging.getLogger())
