@@ -59,7 +59,8 @@ def p_header(p):
 
 
 def p_object_square2(p):
-    'object : LSQUARE LSQUARE insidesquare2 RSQUARE RSQUARE'
+    '''object : LSQUARE LSQUARE names RSQUARE RSQUARE
+              | LSQUARE LSQUARE names PIPE pipelist RSQUARE RSQUARE'''
     p[0] = {'type': "internal_link", 'value': p[2]}
 
 
@@ -122,31 +123,13 @@ def p_htmlcomment(p):
     'htmlcomment : LANGLE BANG DASH DASH names DASH DASH RANGLE'
 
 
-def p_insidesquare2_name(p):
-    'insidesquare2 : names'
-    pass
-
-
-def p_insidesquare2_name_with_pipe(p):
-    'insidesquare2 : names PIPE pipelist'
-
-
-def p_insidesquare2_name_with_colon(p):
-    'insidesquare2 : names COLON names'
-
-
-def p_insidesquare2_name_with_colon_and_pipe(p):
-    'insidesquare2 : names COLON names PIPE pipelist'
-    pass
-
-
 def p_pipelisttemplate_recursive(p):
     'pipelisttemplate : pipelisttemplate PIPE names EQUALS article'
     p[0] = p[1] + [p[3]]
 
 
 def p_pipelisttemplate_base(p):
-    'pipelisttemplate : names'
+    'pipelisttemplate : names EQUALS article'
     p[0] = [p[1]]
 
 
