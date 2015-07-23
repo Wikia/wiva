@@ -56,3 +56,5 @@ docs/_build/
 # PyBuilder
 target/
 .idea
+wikitext/parser.out
+wikitext/parsetab.py

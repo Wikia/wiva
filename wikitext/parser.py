@@ -1,6 +1,7 @@
 # coding=utf-8
 import logging
 import pprint
+import traceback
 
 __author__ = 'alistra'
 
@@ -9,28 +10,75 @@ import ply.yacc as yacc
 from wikitext.lexer import tokens
 
 
+def func_name():
+    return traceback.extract_stack(None, 2)[0][2]
+
+
 def p_empty(p):
     'empty :'
-    pass
+    print "Parsed %s" % func_name()
+    return None
 
 
 def p_article_empty(p):
     'article : empty'
     p[0] = []
+    print "Parsed %s" % func_name()
 
 
 def p_article_name(p):
-    'article : article word'
-    p[0] = p[1].append(p[2])
+    'article : article object'
+    print "Parsed %s" % func_name()
+    p[0] = p[1] + [p[2]]
 
 
-def p_word_name(p):
-    'word : NAME'
+def p_object_name(p):
+    'object : NAME'
+    print "Parsed %s" % func_name()
     p[0] = p[1]
 
-def p_word_square(p):
-    'word : LSQUARE word RSQUARE'
-    p[0] = p[2]
+
+def p_object_number(p):
+    'object : NUMBER'
+    print "Parsed %s" % func_name()
+    p[0] = p[1]
+
+
+def p_object_coma(p):
+    'object : COMMA'
+    print "Parsed %s" % func_name()
+    p[0] = p[1]
+
+
+def p_object_square2(p):
+    'object : LSQUARE2 insidesquare2 RSQUARE2'
+    print "Parsed %s" % func_name()
+    p[0] = {'type': "internal_link", 'value': p[2]}
+
+
+def p_insidesquare2_name(p):
+    'insidesquare2 : NAME'
+    print "Parsed %s" % func_name()
+
+
+def p_insidesquare2_name_with_colon(p):
+    'insidesquare2 : NAME COLON NAME'
+    print "Parsed %s" % func_name()
+
+
+def p_insidesquare2_name_with_pipe(p):
+    'insidesquare2 : NAME COLON NAME PIPE pipelist'
+    pass
+
+
+def p_pipelist_recursive(p):
+    'pipelist : pipelist PIPE object'
+    pass
+
+
+def p_pipelist_base(p):
+    'pipelist : article'
+    pass
 
 
 #

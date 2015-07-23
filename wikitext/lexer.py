@@ -7,7 +7,7 @@ tokens = (
     'DOT', 'COLON', 'SEMICOLON', 'PIPE', 'COMMA',
     'UNDERSCORE', 'DASH', 'BANG', 'HASH', 'PERCENT',
     'LPAREN', 'RPAREN', 'LSQUARE', 'RSQUARE', 'LCURLY', 'RCURLY', 'LANGLE', 'RANGLE', 'SQUOTE', 'DQUOTE',
-    'LCURLY2', 'LCURLY3', 'RCURLY2', 'RCURLY3'
+    'LCURLY2', 'LCURLY3', 'RCURLY2', 'RCURLY3', 'LSQUARE2', 'RSQUARE2'
 )
 
 # Tokens
@@ -25,7 +25,9 @@ t_RCURLY3 = r'\}\}'
 t_LANGLE = r'\<'
 t_RANGLE = r'\>'
 t_LSQUARE = r'\['
+t_LSQUARE2 = r'\[\['
 t_RSQUARE = r'\]'
+t_RSQUARE2 = r'\]\]'
 t_PLUS = r'\+'
 t_TIMES = r'\*'
 t_DIVIDE = r'/'
@@ -40,7 +42,7 @@ t_BANG = r'\!'
 t_HASH = r'\#'
 t_PERCENT = r'\%'
 
-t_NAME = r'[a-zA-Z_][a-zA-Z0-9_]*'
+t_NAME = r'[a-zA-Z_][a-zA-Z0-9_\.]*'
 
 
 def t_NUMBER(t):
