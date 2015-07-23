@@ -1,13 +1,13 @@
 # coding=utf-8
 import logging
-import pprint
 import traceback
+from termcolor import colored
 
 __author__ = 'alistra'
 
 import ply.yacc as yacc
 # noinspection PyUnresolvedReferences
-from wikitext.lexer import tokens
+from wikitext.lexer import *
 
 
 def func_name():
@@ -44,7 +44,7 @@ def p_object_number(p):
     p[0] = p[1]
 
 
-def p_object_coma(p):
+def p_object_comma(p):
     'object : COMMA'
     print "Parsed %s" % func_name()
     p[0] = p[1]
@@ -73,12 +73,12 @@ def p_insidesquare2_name_with_pipe(p):
 
 def p_pipelist_recursive(p):
     'pipelist : pipelist PIPE object'
-    pass
+    p[0] = p[1] + [p[3]]
 
 
 def p_pipelist_base(p):
     'pipelist : article'
-    pass
+    p[0] = [p[1]]
 
 
 #
@@ -125,8 +125,15 @@ def p_pipelist_base(p):
 
 # Error rule for syntax errors
 def p_error(p):
-    pprint.pprint(p)
-    print("Syntax error in input!")
+
+    MAX_CONTEXT = 50
+    pos = p.lexpos
+    prev_line_pos = lexer.lexdata.find('\n', max(pos - MAX_CONTEXT, 0), pos)
+    next_line_pos = lexer.lexdata.find('\n', pos, pos + MAX_CONTEXT)
+    print colored("Syntax error in input!", "red")
+    print
+    print colored(lexer.lexdata[prev_line_pos:next_line_pos], "yellow")
+    print
 
 
 # Build the parser
@@ -134,4 +141,4 @@ parser = yacc.yacc(start='article')
 
 
 def parse(text):
-    return parser.parse(text, debug=logging.getLogger())
+    return parser.parse(text, lexer=lex, debug=logging.getLogger())
