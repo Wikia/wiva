@@ -7,6 +7,7 @@ import docopt
 import logging
 import requests
 from urlparse import urlparse
+from mediawiki import Article
 from wikitext.lexer import tokenize
 from wikitext.parser import parse
 
@@ -28,8 +29,9 @@ def get_wikitext(url):
 def cli(arguments):
     if arguments['--debug']:
         logging.root.setLevel(logging.DEBUG)
-    url = arguments['<url>']
-    wikitext = get_wikitext(url)
+
+    article = Article(arguments['<url>'])
+    wikitext = article.wikitext
     if arguments['--verbose']:
         print "Wikitext:"
         print
