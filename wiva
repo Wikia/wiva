@@ -4,19 +4,25 @@ import argparse
 import requests
 from urlparse import urlparse
 from wikitext.lexer import tokenize
+from wikitext.parser import parse
+
 
 def parse_args():
     """Parse arguments"""
     parser = argparse.ArgumentParser(description='Validate Wikitext on a page')
 
     parser.add_argument("url",
-                        help='app name (under icon) -- required unless -k',
+                        help='Article url',
                         action='store')
 
     parser.add_argument("revision",
-                        help='bundle identifier suffix',
+                        help='Article revision',
                         action='store',
                         nargs='?')
+
+    parser.add_argument("-v", "--verbose",
+                        help='verbose print',
+                        action='store_true')
 
     arguments = parser.parse_args()
     args_dict = vars(arguments)
@@ -26,20 +32,32 @@ def parse_args():
 
 def get_wikitext(url):
     url_parse_result = urlparse(url)
-    wikitext_url = "%s/api.php?action=parse&prop=wikitext&page=%s&format=json" % (url_parse_result.scheme + "://" + url_parse_result.hostname, url_parse_result.path.split('/')[-1])
+    wikitext_url = "%s/api.php?action=parse&prop=wikitext&page=%s&format=json" % (
+    url_parse_result.scheme + "://" + url_parse_result.hostname, url_parse_result.path.split('/')[-1])
     r = requests.get(wikitext_url)
     return r.json()["parse"]["wikitext"]["*"]
+
 
 def main():
     args = parse_args()
     url = args["url"]
     wikitext = get_wikitext(url)
-    print wikitext
-    print tokenize(wikitext)
+    if args['verbose']:
+        print "Wikitext:"
+        print
+        print wikitext
+        print
+
+    if args['verbose']:
+        print "Tokens:"
+        print
+        print tokenize(wikitext)
+        print
+
+    print parse(wikitext)
 
 
 if __name__ == '__main__':
     main()
-
 
 __author__ = 'alistra'
