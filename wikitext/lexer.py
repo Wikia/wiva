@@ -7,7 +7,6 @@ tokens = (
     'DOT', 'COLON', 'SEMICOLON', 'PIPE', 'COMMA',
     'UNDERSCORE', 'DASH', 'BANG', 'HASH', 'PERCENT',
     'LPAREN', 'RPAREN', 'LSQUARE', 'RSQUARE', 'LCURLY', 'RCURLY', 'LANGLE', 'RANGLE', 'SQUOTE', 'DQUOTE',
-    'LCURLY2', 'LCURLY3', 'RCURLY2', 'RCURLY3', 'LSQUARE2', 'RSQUARE2'
 )
 
 # Tokens
@@ -17,17 +16,11 @@ t_COLON = r'\:'
 t_SEMICOLON = r'\;'
 t_DOT = r'\.'
 t_LCURLY = r'\{'
-t_LCURLY2 = r'\{\{'
-t_LCURLY3 = r'\{\{\{'
 t_RCURLY = r'\}'
-t_RCURLY2 = r'\}\}'
-t_RCURLY3 = r'\}\}'
 t_LANGLE = r'\<'
 t_RANGLE = r'\>'
 t_LSQUARE = r'\['
-t_LSQUARE2 = r'\[\['
 t_RSQUARE = r'\]'
-t_RSQUARE2 = r'\]\]'
 t_PLUS = r'\+'
 t_TIMES = r'\*'
 t_DIVIDE = r'/'

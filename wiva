@@ -11,9 +11,9 @@ from mediawiki import Article
 from wikitext.lexer import tokenize
 from wikitext.parser import parse
 
-
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.WARNING)
+
 
 def get_wikitext(url):
     url_parse_result = urlparse(url)
@@ -25,6 +25,7 @@ def get_wikitext(url):
         url_parse_result.scheme + "://" + url_parse_result.hostname, article)
     r = requests.get(wikitext_url)
     return r.json()["parse"]["wikitext"]["*"]
+
 
 def cli(arguments):
     if arguments['--debug']:
