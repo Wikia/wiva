@@ -11,3 +11,10 @@ http://http://google.pl
 <references>asdsad
 <references>a</references>
 
+
+{| style="width:1000px;"
+{| aogn="asdads" style="width:1000px;"
+
+{| width="1000px"
+{| style="color:red" width="1000px"
+

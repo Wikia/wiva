@@ -1,5 +1,6 @@
 import re
 
+MAX_ACCEPTABLE_WIDTH = 200
 
 def double_http(wikitext, validation):
     RE = re.compile(r'https?:/?/?https?://', re.I)
@@ -39,18 +40,33 @@ def external_links_in_double_brackets(wikitext, validation):
         validation.add_error('External link in double brackets', m.start(), m.end())
 
 
-def image_width_breaks_mobile(wikitext, validation):
+def image_width_breaks_layout(wikitext, validation):
     RE = re.compile(r'\|(([0-9]+)px)[]|]')
     for m in RE.finditer(wikitext):
         width = int(m.group(2))
-        if width > 300:
+        if width > MAX_ACCEPTABLE_WIDTH:
             validation.add_error('Image width wider than minimum tablet/desktop content width', m.start(1), m.end(1))
 
+
+def table_width_breaks_layout(wikitext, validation):
+    RE_STYLE_WIDTH = re.compile(r'\{\|[^\r\n]*style="[^"]*width:\s*([0-9]+)px[^"]*"', re.I)
+    RE_WIDTH = re.compile(r'\{\|[^\r\n]+width="?([0-9]+)px"?', re.I)
+
+    for m in RE_STYLE_WIDTH.finditer(wikitext):
+        width = int(m.group(1))
+        if width > MAX_ACCEPTABLE_WIDTH:
+            validation.add_error('Table width wider than minimum tablet/desktop content width', m.start(1), m.end(1))
+
+    for m in RE_WIDTH.finditer(wikitext):
+        width = int(m.group(1))
+        if width > MAX_ACCEPTABLE_WIDTH:
+            validation.add_error('Table width wider than minimum tablet/desktop content width', m.start(1), m.end(1))
 
 ALL_CHECKERS = [
     double_http,
     local_articles_as_external_links,
     unclosed_references_tag,
     external_links_in_double_brackets,
-    image_width_breaks_mobile
+    image_width_breaks_layout,
+    table_width_breaks_layout
 ]
