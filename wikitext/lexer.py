@@ -35,7 +35,7 @@ t_BANG = r'\!'
 t_HASH = r'\#'
 t_PERCENT = r'\%'
 
-t_NAME = r'[a-zA-Z_][a-zA-Z0-9_\.]*'
+t_NAME = r'[\w_][\w_\.]*'
 
 
 def t_NUMBER(t):

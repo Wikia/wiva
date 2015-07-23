@@ -1,7 +1,5 @@
 # coding=utf-8
 import logging
-import traceback
-
 from termcolor import colored
 
 __author__ = 'alistra'
@@ -16,36 +14,46 @@ def p_empty(p):
     return None
 
 
-def p_article_empty(p):
+def p_article_base(p):
     'article : empty'
     p[0] = []
 
 
-def p_article_name(p):
+def p_article_recursive(p):
     'article : article object'
     p[0] = p[1] + [p[2]]
 
 
-def p_object_name(p):
-    'object : NAME'
-    p[0] = p[1]
+def p_names_base(p):
+    'names : NAME'
+    pass
 
 
-def p_object_number(p):
-    'object : NUMBER'
-    p[0] = p[1]
+def p_names_recursive(p):
+    """names : names NAME
+             | names COLON
+             | names SQUOTE
+             | names NUMBER
+             | names DASH
+             | names DOT
+             | names COMMA
+             | LPAREN names RPAREN
+    """
+    pass
 
 
 def p_object_misc(p):
-    """object : COMMA
-              | DOT
-              | TIMES
+    """object : htmltag
               | htmlcomment
               | header
-              | SQUOTE
-              | COLON
-              | DASH"""
+              | bullet
+              | names
+              | link"""
     p[0] = p[1]
+
+
+def p_bullet(p):
+    """bullet : TIMES article"""
 
 
 def p_header(p):
@@ -58,8 +66,8 @@ def p_header(p):
     """
 
 
-def p_object_square2(p):
-    '''object : LSQUARE LSQUARE names RSQUARE RSQUARE
+def p_link(p):
+    '''link : LSQUARE LSQUARE names RSQUARE RSQUARE
               | LSQUARE LSQUARE names PIPE pipelist RSQUARE RSQUARE'''
     p[0] = {'type': "internal_link", 'value': p[2]}
 
@@ -79,19 +87,19 @@ def p_object_paren_name_args(p):
     p[0] = {'type': "template", 'value': p[2]}
 
 
-def p_object_squote3_name(p):
-    'object : SQUOTE SQUOTE SQUOTE names SQUOTE SQUOTE SQUOTE'
-    pass
-
-
-def p_object_squote2_name(p):
-    'object : SQUOTE SQUOTE names SQUOTE SQUOTE'
-    pass
-
-
-def p_object_squote_name(p):
-    'object : SQUOTE names SQUOTE'
-    pass
+# def p_object_squote3_name(p):
+#     'object : SQUOTE SQUOTE SQUOTE names SQUOTE SQUOTE SQUOTE'
+#     pass
+#
+#
+# def p_object_squote2_name(p):
+#     'object : SQUOTE SQUOTE names SQUOTE SQUOTE'
+#     pass
+#
+#
+# def p_object_squote_name(p):
+#     'object : SQUOTE names SQUOTE'
+#     pass
 
 
 def p_object_dquote_name(p):
@@ -99,13 +107,9 @@ def p_object_dquote_name(p):
     pass
 
 
-def p_object_html_tag_closed(p):
-    'object : LANGLE NAME attributes DIVIDE RANGLE'
-    pass
-
-
-def p_object_html_tag(p):
-    'object : LANGLE NAME attributes RANGLE article LANGLE DIVIDE NAME RANGLE'
+def p_htmltag(p):
+    '''htmltag : LANGLE NAME attributes DIVIDE RANGLE
+               | LANGLE NAME attributes RANGLE article LANGLE DIVIDE NAME RANGLE'''
     pass
 
 
@@ -120,7 +124,7 @@ def p_attributes_base(p):
 
 
 def p_htmlcomment(p):
-    'htmlcomment : LANGLE BANG DASH DASH names DASH DASH RANGLE'
+    'htmlcomment : LANGLE BANG DASH DASH article DASH DASH RANGLE'
 
 
 def p_pipelisttemplate_recursive(p):
@@ -141,21 +145,6 @@ def p_pipelist_recursive(p):
 def p_pipelist_base(p):
     'pipelist : article'
     p[0] = [p[1]]
-
-
-def p_names_base(p):
-    'names : NAME'
-    pass
-
-
-def p_names_recursive(p):
-    """names : names NAME
-             | names DASH
-             | names COLON
-             | names SQUOTE
-             | LPAREN names RPAREN
-    """
-    pass
 
 
 # Error rule for syntax errors
