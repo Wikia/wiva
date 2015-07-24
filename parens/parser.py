@@ -1,4 +1,6 @@
 # coding=utf-8
+from parens.result import *
+
 __author__ = 'alistra'
 
 # coding=utf-8
@@ -21,22 +23,34 @@ def p_article_base(p):
 
 def p_article_recursive(p):
     'article : article TEXT'
-    p[0] = p[1] + [p[2]]
+    node = TextNode(p[2])
+    node.line = p.lineno(2)
+    node.pos = p.lexpos(2)
+    p[0] = p[1] + [node]
 
 
 def p_article_recursive_parens(p):
     'article : article LPAREN article RPAREN'
-    p[0] = p[1] + [{"type": "in-parens", "value": p[3]}]
+    node = ParenNode(p[3])
+    node.line = p.lineno(3)
+    node.pos = p.lexpos(3)
+    p[0] = p[1] + [node]
 
 
 def p_article_recursive_square(p):
     'article : article LSBRACE article RSBRACE'
-    p[0] = p[1] + [{"type": "in-square", "value": p[3]}]
+    node = SquareNode(p[3])
+    node.line = p.lineno(3)
+    node.pos = p.lexpos(3)
+    p[0] = p[1] + [node]
 
 
 def p_article_recursive_curly(p):
     'article : article LCBRACE article RCBRACE'
-    p[0] = p[1] + [{"type": "in-curly", "value": p[3]}]
+    node = CurlyNode(p[3])
+    node.line = p.lineno(3)
+    node.pos = p.lexpos(3)
+    p[0] = p[1] + [node]
 
 
 # Error rule for syntax errors
@@ -62,4 +76,4 @@ parser = yacc.yacc(start='article')
 
 
 def parse(text):
-    return parser.parse(text, debug=logging.getLogger())
+    return parser.parse(text, debug=logging.getLogger(), tracking=True)
