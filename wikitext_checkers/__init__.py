@@ -121,7 +121,7 @@ def html_div(wikitext, validation):
     p = wikitext.find(pattern)
     while p != -1:
         p2 = p + len(pattern)
-        validation.add_warning('Don\'t use <div>, they look bad on mobile', p, p + len(pattern))
+        validation.add_warning('Don\'t use <div>, looks bad on mobile', p, p + len(pattern))
         p = wikitext.find(pattern, p2)
 
 
