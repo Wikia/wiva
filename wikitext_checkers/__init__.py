@@ -1,7 +1,7 @@
 import re
 from parens.parser import parse
 
-MAX_ACCEPTABLE_WIDTH = 720  # todo: what the value really is?
+MAX_ACCEPTABLE_WIDTH = 664  # todo: what the value really is?
 
 
 def double_http(wikitext, validation):
