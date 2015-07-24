@@ -89,7 +89,7 @@ def misclosed_gallery(wikitext, validation):
 
 def bad_tag(wikitext, validation):
     bad_tags = {"<b[^ri]*?>": "'''text'''",
-                "<i.*?>": "''text''",
+                "<i[^m]*?>": "''text''",
                 "<table.*?>": "{| table content |}",
                 "<h1.*?>": "= heading =",
                 "<h2.*?>": "== heading ==",
