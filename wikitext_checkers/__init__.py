@@ -3,7 +3,15 @@ from parens.parser import parse
 
 MAX_ACCEPTABLE_WIDTH = 664  # todo: what the value really is?
 
+ALL_CHECKERS = []
 
+
+def autoregister(f):
+    ALL_CHECKERS.append(f)
+    return f
+
+
+@autoregister
 def double_http(wikitext, validation):
     RE = re.compile(r'https?:/?/?https?://', re.I)
 
@@ -11,6 +19,7 @@ def double_http(wikitext, validation):
         validation.add_error('Double http:// in URL', m.start(), m.end())
 
 
+@autoregister
 def local_articles_as_external_links(wikitext, validation):
     host = '[' + validation.article.url.host + '/'
     host_len = len(host)
@@ -21,6 +30,7 @@ def local_articles_as_external_links(wikitext, validation):
         p = wikitext.find(host, p + 1)
 
 
+@autoregister
 def unclosed_references_tag(wikitext, validation):
     T_OPEN = r'<references>'
     T_OPEN_len = len(T_OPEN)
@@ -35,6 +45,7 @@ def unclosed_references_tag(wikitext, validation):
         p = wikitext.find(T_OPEN, p2)
 
 
+@autoregister
 def external_links_in_double_brackets(wikitext, validation):
     RE = re.compile(r'\[\[https?://', re.I)
 
@@ -42,6 +53,7 @@ def external_links_in_double_brackets(wikitext, validation):
         validation.add_warning('External link in double brackets', m.start(), m.end())
 
 
+@autoregister
 def image_width_breaks_layout(wikitext, validation):
     RE = re.compile(r'\|(([0-9]+)px)[]|]')
     for m in RE.finditer(wikitext):
@@ -52,6 +64,7 @@ def image_width_breaks_layout(wikitext, validation):
                 m.start(1), m.end(1))
 
 
+@autoregister
 def table_width_breaks_layout(wikitext, validation):
     RE_STYLE_WIDTH = re.compile(r'\{\|[^\r\n]*style="[^"]*width:\s*([0-9]+)px[^"]*"', re.I)
     RE_WIDTH = re.compile(r'\{\|[^\r\n]+width="?([0-9]+)px"?', re.I)
@@ -71,6 +84,7 @@ def table_width_breaks_layout(wikitext, validation):
                 m.start(1), m.end(1))
 
 
+@autoregister
 def broken_headers(wikitext, validation):
     RE = re.compile(r'(?:^|\n)(=+).*?[^=](=+)\s*(?=$|\r|\n)')
     for m in RE.finditer(wikitext):
@@ -81,10 +95,12 @@ def broken_headers(wikitext, validation):
         if right_len > 6:
             validation.add_error('Header level is invalid (max. 6): {}'.format(right_len), m.start(2), m.end(2))
         if left_len != right_len:
-            validation.add_error('Header levels do not match: opening {} and closing {}'.format(left_len, right_len), m.start(1),
+            validation.add_error('Header levels do not match: opening {} and closing {}'.format(left_len, right_len),
+                                 m.start(1),
                                  m.end(2))
 
 
+@autoregister
 def misclosed_gallery(wikitext, validation):
     pattern = '<gallery/>'
     p = wikitext.find(pattern)
@@ -94,6 +110,7 @@ def misclosed_gallery(wikitext, validation):
         p = wikitext.find(pattern, p2)
 
 
+@autoregister
 def bad_tag(wikitext, validation):
     bad_tags = {"<b( .*?)?>": {"replacement": "'''text'''", "original": "<b>"},
                 "<i( .*?)?>": {"replacement": "''text''", "original": "<i>"},
@@ -116,6 +133,7 @@ def bad_tag(wikitext, validation):
                 m.start(), m.end())
 
 
+@autoregister
 def html_div(wikitext, validation):
     pattern = '<div( .*?)>'
     p = wikitext.find(pattern)
@@ -125,20 +143,14 @@ def html_div(wikitext, validation):
         p = wikitext.find(pattern, p2)
 
 
+@autoregister
 def parens(wikitext, validation):
     parse(wikitext, validation)
 
 
-ALL_CHECKERS = [
-    double_http,
-    local_articles_as_external_links,
-    unclosed_references_tag,
-    external_links_in_double_brackets,
-    image_width_breaks_layout,
-    table_width_breaks_layout,
-    broken_headers,
-    parens,
-    misclosed_gallery,
-    bad_tag,
-    html_div
-]
+@autoregister
+def inline_styles(wikitext, validation):
+    RE = re.compile(r'\bstyle=', re.I)
+
+    for m in RE.finditer(wikitext):
+        validation.add_warning('Inline style looks bad on mobile', m.start(), m.end())

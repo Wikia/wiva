@@ -17,6 +17,8 @@ http://http://google.pl
 <references>asdsad
 <references>a</references>
 
+style="asds"
+ style="zxc"
 
 {| style="width:1000px;"
 {| aogn="asdads" style="width:1000px;"
