@@ -78,6 +78,15 @@ def broken_headers(wikitext, validation):
             validation.add_error('Header levels do not match', m.start(1), m.end(2))
 
 
+def misclosed_gallery(wikitext, validation):
+    pattern = '<gallery/>'
+    p = wikitext.find(pattern)
+    while p != -1:
+        p2 = p + len(pattern)
+        validation.add_error('Mistyped </gallery>', p, p + len(pattern))
+        p = wikitext.find(pattern, p2)
+
+
 def parens(wikitext, validation):
     parse(wikitext, validation)
 
@@ -90,5 +99,6 @@ ALL_CHECKERS = [
     image_width_breaks_layout,
     table_width_breaks_layout,
     broken_headers,
-    parens
+    parens,
+    misclosed_gallery
 ]
