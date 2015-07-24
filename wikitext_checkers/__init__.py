@@ -1,6 +1,6 @@
 import re
 
-MAX_ACCEPTABLE_WIDTH = 200
+MAX_ACCEPTABLE_WIDTH = 500 # todo: what the value really is?
 
 def double_http(wikitext, validation):
     RE = re.compile(r'https?:/?/?https?://', re.I)

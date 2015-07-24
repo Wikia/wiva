@@ -29,9 +29,7 @@ class Url(object):
 
     @property
     def wikitext_url(self):
-        return "{host}/api.php?action=parse&prop=wikitext&page={page}&format=json".format(
-            host=self.host,
-            page=self.page)
+        return "{url}?action=raw".format(url=self.url)
 
     def new_page(self, new_page_name):
         new_url = copy.copy(self)
@@ -50,5 +48,5 @@ class Article(object):
     def wikitext(self):
         if self._wikitext is None:
             r = requests.get(self.url.wikitext_url)
-            self._wikitext = r.json()["parse"]["wikitext"]["*"]
+            self._wikitext = r.content.decode('utf-8')
         return self._wikitext
