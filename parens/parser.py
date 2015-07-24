@@ -1,15 +1,14 @@
 # coding=utf-8
 from parens.result import *
-
-__author__ = 'alistra'
-
-# coding=utf-8
 import logging
 from termcolor import colored
 import ply.yacc as yacc
 # noinspection PyUnresolvedReferences
 from parens.lexer import *
 
+__author__ = 'alistra'
+
+validation = None
 
 def p_empty(p):
     'empty :'
@@ -65,15 +64,13 @@ def p_error(p):
     if next_line_pos > pos + MAX_CONTEXT or next_line_pos == -1:
         next_line_pos = pos + MAX_CONTEXT
 
-    print colored("Syntax error in input!", "red")
-    print
-    print colored(lexer.lexdata[prev_line_pos:next_line_pos], "yellow").encode('utf-8')
-    print
-
+    validation.add_error("Parentheses don't match", p.lexpos)
 
 # Build the parser
 parser = yacc.yacc(start='article')
 
 
-def parse(text):
+def parse(text, v):
+    global validation
+    validation = v
     return parser.parse(text, debug=logging.getLogger(), tracking=True)

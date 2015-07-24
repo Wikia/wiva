@@ -1,6 +1,8 @@
 import re
+from parens.parser import parse
 
-MAX_ACCEPTABLE_WIDTH = 500 # todo: what the value really is?
+MAX_ACCEPTABLE_WIDTH = 500  # todo: what the value really is?
+
 
 def double_http(wikitext, validation):
     RE = re.compile(r'https?:/?/?https?://', re.I)
@@ -62,6 +64,7 @@ def table_width_breaks_layout(wikitext, validation):
         if width > MAX_ACCEPTABLE_WIDTH:
             validation.add_error('Table width wider than minimum tablet/desktop content width', m.start(1), m.end(1))
 
+
 def broken_headers(wikitext, validation):
     RE = re.compile(r'(?:^|\n)(=+).*?[^=](=+)\s*(?=$|\r|\n)')
     for m in RE.finditer(wikitext):
@@ -74,6 +77,11 @@ def broken_headers(wikitext, validation):
         if left_len != right_len:
             validation.add_error('Header levels do not match', m.start(1), m.end(2))
 
+
+def parens(wikitext, validation):
+    parse(wikitext, validation)
+
+
 ALL_CHECKERS = [
     double_http,
     local_articles_as_external_links,
@@ -81,5 +89,6 @@ ALL_CHECKERS = [
     external_links_in_double_brackets,
     image_width_breaks_layout,
     table_width_breaks_layout,
-    broken_headers
+    broken_headers,
+    parens
 ]

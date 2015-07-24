@@ -1,3 +1,4 @@
+# coding=utf-8
 import termcolor
 
 
@@ -23,7 +24,6 @@ class Message(object):
         if not self.severity in self.COLORS:
             return text
         return termcolor.colored(text, *self.COLORS[self.severity])
-
 
     def __unicode__(self):
         source_text = self.source_text

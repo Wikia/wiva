@@ -1,6 +1,7 @@
 # coding=utf-8
 import logging
 from termcolor import colored
+from validation import Message
 
 __author__ = 'alistra'
 
@@ -159,9 +160,12 @@ def p_error(p):
     if next_line_pos > pos + MAX_CONTEXT or next_line_pos == -1:
         next_line_pos = pos + MAX_CONTEXT
 
+    source_text = lexer.lexdata[prev_line_pos:next_line_pos]
+
     print colored("Syntax error in input!", "red")
     print
-    print colored(lexer.lexdata[prev_line_pos:next_line_pos], "yellow").encode('utf-8')
+
+    print colored(source_text, "yellow").encode('utf-8')
     print
 
 
