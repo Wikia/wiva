@@ -150,7 +150,7 @@ def parens(wikitext, validation):
 
 @autoregister
 def inline_styles(wikitext, validation):
-    RE = re.compile(r'\bstyle=', re.I)
+    RE = re.compile(r' style=', re.I)
 
     for m in RE.finditer(wikitext):
         validation.add_warning('Inline style looks bad on mobile', m.start(), m.end())
