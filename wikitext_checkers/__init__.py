@@ -116,6 +116,15 @@ def bad_tag(wikitext, validation):
                 m.start(), m.end())
 
 
+def html_div(wikitext, validation):
+    pattern = '<div( .*?)>'
+    p = wikitext.find(pattern)
+    while p != -1:
+        p2 = p + len(pattern)
+        validation.add_warning('Don\'t use <div>, they look bad on mobile', p, p + len(pattern))
+        p = wikitext.find(pattern, p2)
+
+
 def parens(wikitext, validation):
     parse(wikitext, validation)
 
@@ -130,5 +139,6 @@ ALL_CHECKERS = [
     broken_headers,
     parens,
     misclosed_gallery,
-    bad_tag
+    bad_tag,
+    html_div
 ]
