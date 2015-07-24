@@ -12,7 +12,7 @@ def double_http(wikitext, validation):
 
 
 def local_articles_as_external_links(wikitext, validation):
-    host = validation.article.url.host + '/'
+    host = '[' + validation.article.url.host + '/'
     host_len = len(host)
 
     p = wikitext.find(host)
@@ -47,7 +47,9 @@ def image_width_breaks_layout(wikitext, validation):
     for m in RE.finditer(wikitext):
         width = int(m.group(2))
         if width > MAX_ACCEPTABLE_WIDTH:
-            validation.add_error('Image width wider than minimum tablet/desktop content width', m.start(1), m.end(1))
+            validation.add_error(
+                'Image width wider than minimum tablet/desktop content width ({}px)'.format(MAX_ACCEPTABLE_WIDTH),
+                m.start(1), m.end(1))
 
 
 def table_width_breaks_layout(wikitext, validation):
@@ -57,12 +59,16 @@ def table_width_breaks_layout(wikitext, validation):
     for m in RE_STYLE_WIDTH.finditer(wikitext):
         width = int(m.group(1))
         if width > MAX_ACCEPTABLE_WIDTH:
-            validation.add_error('Table width wider than minimum tablet/desktop content width', m.start(1), m.end(1))
+            validation.add_error(
+                'Table width wider than minimum tablet/desktop content width ({}px)'.format(MAX_ACCEPTABLE_WIDTH),
+                m.start(1), m.end(1))
 
     for m in RE_WIDTH.finditer(wikitext):
         width = int(m.group(1))
         if width > MAX_ACCEPTABLE_WIDTH:
-            validation.add_error('Table width wider than minimum tablet/desktop content width', m.start(1), m.end(1))
+            validation.add_error(
+                'Table width wider than minimum tablet/desktop content width ({}px)'.format(MAX_ACCEPTABLE_WIDTH),
+                m.start(1), m.end(1))
 
 
 def broken_headers(wikitext, validation):
@@ -71,11 +77,12 @@ def broken_headers(wikitext, validation):
         left_len = len(m.group(1))
         right_len = len(m.group(2))
         if left_len > 6:
-            validation.add_error('Header level is invalid: {}'.format(left_len), m.start(1), m.end(1))
+            validation.add_error('Header level is invalid (max. 6): {}'.format(left_len), m.start(1), m.end(1))
         if right_len > 6:
-            validation.add_error('Header level is invalid: {}'.format(right_len), m.start(2), m.end(2))
+            validation.add_error('Header level is invalid (max. 6): {}'.format(right_len), m.start(2), m.end(2))
         if left_len != right_len:
-            validation.add_error('Header levels do not match', m.start(1), m.end(2))
+            validation.add_error('Header levels do not match: opening {} and closing {}'.format(left_len, right_len), m.start(1),
+                                 m.end(2))
 
 
 def misclosed_gallery(wikitext, validation):
