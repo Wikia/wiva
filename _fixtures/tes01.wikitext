@@ -3,11 +3,15 @@
 [[asdasd|500px]]
 [[asdasd|700px]]
 
+[[Asd]]
 [[http://muppet.wikia.com/wiki/Asd]]
+[[http://muppet.wikia.com/wiki/Asd|asdasda]]
 
+http://google.pl
 http://http://google.pl
 
 
+<references />
 <references>asdsad
 <references>a</references>
 
@@ -18,3 +22,6 @@ http://http://google.pl
 {| width="1000px"
 {| style="color:red" width="1000px"
 
+==OK==
+===12=
+=======avav=======

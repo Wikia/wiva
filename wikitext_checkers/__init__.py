@@ -62,11 +62,24 @@ def table_width_breaks_layout(wikitext, validation):
         if width > MAX_ACCEPTABLE_WIDTH:
             validation.add_error('Table width wider than minimum tablet/desktop content width', m.start(1), m.end(1))
 
+def broken_headers(wikitext, validation):
+    RE = re.compile(r'(?:^|\n)(=+).*?[^=](=+)\s*(?=$|\r|\n)')
+    for m in RE.finditer(wikitext):
+        left_len = len(m.group(1))
+        right_len = len(m.group(2))
+        if left_len > 6:
+            validation.add_error('Header level is invalid: {}'.format(left_len), m.start(1), m.end(1))
+        if right_len > 6:
+            validation.add_error('Header level is invalid: {}'.format(right_len), m.start(2), m.end(2))
+        if left_len != right_len:
+            validation.add_error('Header levels do not match', m.start(1), m.end(2))
+
 ALL_CHECKERS = [
     double_http,
     local_articles_as_external_links,
     unclosed_references_tag,
     external_links_in_double_brackets,
     image_width_breaks_layout,
-    table_width_breaks_layout
+    table_width_breaks_layout,
+    broken_headers
 ]
