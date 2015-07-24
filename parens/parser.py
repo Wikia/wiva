@@ -1,14 +1,14 @@
 # coding=utf-8
-from parens.result import *
 import logging
-from termcolor import colored
 import ply.yacc as yacc
-# noinspection PyUnresolvedReferences
+from parens.result import *
 from parens.lexer import *
 
 __author__ = 'alistra'
 
 validation = None
+paren_stack = None
+
 
 def p_empty(p):
     'empty :'
@@ -29,7 +29,7 @@ def p_article_recursive(p):
 
 
 def p_article_recursive_parens(p):
-    'article : article LPAREN article RPAREN'
+    'article : article LPAREN seen_LPAREN article RPAREN seen_RPAREN'
     node = ParenNode(p[3])
     node.line = p.lineno(3)
     node.pos = p.lexpos(3)
@@ -37,7 +37,7 @@ def p_article_recursive_parens(p):
 
 
 def p_article_recursive_square(p):
-    'article : article LSBRACE article RSBRACE'
+    'article : article LSBRACE seen_LSBRACE article RSBRACE seen_RSBRACE'
     node = SquareNode(p[3])
     node.line = p.lineno(3)
     node.pos = p.lexpos(3)
@@ -45,32 +45,61 @@ def p_article_recursive_square(p):
 
 
 def p_article_recursive_curly(p):
-    'article : article LCBRACE article RCBRACE'
+    'article : article LCBRACE seen_LCBRACE article RCBRACE seen_RCBRACE'
     node = CurlyNode(p[3])
     node.line = p.lineno(3)
     node.pos = p.lexpos(3)
     p[0] = p[1] + [node]
 
 
+def p_seen_LPAREN(p):
+    'seen_LPAREN :'
+    paren_stack.append({'paren': '(', 'token': p.stack[-1]})
+
+
+def p_seen_RPAREN(p):
+    'seen_RPAREN :'
+    del paren_stack[-1]
+
+
+def p_seen_LSBRACE(p):
+    'seen_LSBRACE :'
+    paren_stack.append({'paren': '[', 'token': p.stack[-1]})
+
+
+def p_seen_RSBRACE(p):
+    'seen_RSBRACE :'
+    del paren_stack[-1]
+
+
+def p_seen_LCBRACE(p):
+    'seen_LCBRACE :'
+    paren_stack.append({'paren': '{', 'token': p.stack[-1]})
+
+
+def p_seen_RCBRACE(p):
+    'seen_RCBRACE :'
+    del paren_stack[-1]
+
+
 # Error rule for syntax errors
 def p_error(p):
-    MAX_CONTEXT = 50
-    pos = p.lexpos
-    prev_line_pos = lexer.lexdata.find('\n', max(pos - MAX_CONTEXT, 0), pos)
-    next_line_pos = lexer.lexdata.find('\n', pos)
-    if prev_line_pos == -1:
-        prev_line_pos = max(pos - MAX_CONTEXT, 0)
+    try:
+        stack_elem = paren_stack.pop(-1)
+    except IndexError:
+        validation.add_error("Closing %s missing an opening" % p.value, p.lexpos)
+        return
 
-    if next_line_pos > pos + MAX_CONTEXT or next_line_pos == -1:
-        next_line_pos = pos + MAX_CONTEXT
+    paren = stack_elem['paren']
+    token = stack_elem['token']
+    validation.add_error("Opening %s missing a closing" % paren, token.lexpos)
 
-    validation.add_error("Parentheses don't match", p.lexpos)
 
-# Build the parser
 parser = yacc.yacc(start='article')
 
 
 def parse(text, v):
-    global validation
+    global validation, paren_stack
     validation = v
+    paren_stack = []
     return parser.parse(text, debug=logging.getLogger(), tracking=True)
