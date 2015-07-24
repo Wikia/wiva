@@ -1,2 +1,2 @@
 #!/bin/bash
-./wiva http://muppet.wikia.com/wiki/Kermit_the_Frog --check-wikitext --wikitext _fixtures/tes01.wikitext
+./wiva http://muppet.wikia.com/wiki/Kermit_the_Frog --text-only --wikitext _fixtures/tes01.wikitext

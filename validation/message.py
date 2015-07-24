@@ -3,7 +3,7 @@ import termcolor
 
 
 class Message(object):
-    MAX_LINE_LENGTH = 50
+    MAX_LINE_LENGTH = 100
 
     ERROR = 'ERROR'
     WARNING = 'WARNING'
