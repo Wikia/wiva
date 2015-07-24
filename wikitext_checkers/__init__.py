@@ -88,23 +88,25 @@ def misclosed_gallery(wikitext, validation):
 
 
 def bad_tag(wikitext, validation):
-    bad_tags = {"<b[^ri]*?>": "'''text'''",
-                "<i[^m]*?>": "''text''",
-                "<table.*?>": "{| table content |}",
-                "<h1.*?>": "= heading =",
-                "<h2.*?>": "== heading ==",
-                "<h3.*?>": "=== heading ===",
-                "<h4.*?>": "==== heading ====",
-                "<h5.*?>": "===== heading =====",
-                "<h6.*?>": "====== heading ======"
+    bad_tags = {"<b( .*?)?>": {"replacement": "'''text'''", "original": "<b>"},
+                "<i( .*?)?>": {"replacement": "''text''", "original": "<i>"},
+                "<table( .*?)?>": {"replacement": "{| table content |}", "original": "<table>"},
+                "<h1( .*?)?>": {"replacement": "= heading =", "original": "<h1>"},
+                "<h2( .*?)?>": {"replacement": "== heading ==", "original": "<h2>"},
+                "<h3( .*?)?>": {"replacement": "=== heading ===", "original": "<h3>"},
+                "<h4( .*?)?>": {"replacement": "==== heading ====", "original": "<h4>"},
+                "<h5( .*?)?>": {"replacement": "===== heading =====", "original": "<h5>"},
+                "<h6( .*?)?>": {"replacement": "====== heading ======", "original": "<h6>"}
                 }
 
     for pattern in bad_tags:
-        replacement = bad_tags[pattern]
+        replacement = bad_tags[pattern]["replacement"]
         RE = re.compile(pattern)
         for m in RE.finditer(wikitext):
-            printable_pattern = pattern.replace(".*?", "")
-            validation.add_warning('Don\'t use an html tag %s, use wikitext replacement %s instead' % (printable_pattern, replacement), m.start(), m.end())
+            printable_pattern = bad_tags[pattern]["original"]
+            validation.add_warning(
+                'Don\'t use an html tag %s, use wikitext replacement %s instead' % (printable_pattern, replacement),
+                m.start(), m.end())
 
 
 def parens(wikitext, validation):
