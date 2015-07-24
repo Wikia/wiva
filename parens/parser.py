@@ -6,7 +6,7 @@ import logging
 from termcolor import colored
 import ply.yacc as yacc
 # noinspection PyUnresolvedReferences
-from squareparens.lexer import *
+from parens.lexer import *
 
 
 def p_empty(p):
@@ -26,7 +26,17 @@ def p_article_recursive(p):
 
 def p_article_recursive_parens(p):
     'article : article LPAREN article RPAREN'
-    p[0] = p[1] + [{"type": "in-squareparens", "value": p[3]}]
+    p[0] = p[1] + [{"type": "in-parens", "value": p[3]}]
+
+
+def p_article_recursive_square(p):
+    'article : article LSBRACE article RSBRACE'
+    p[0] = p[1] + [{"type": "in-square", "value": p[3]}]
+
+
+def p_article_recursive_curly(p):
+    'article : article LCBRACE article RCBRACE'
+    p[0] = p[1] + [{"type": "in-curly", "value": p[3]}]
 
 
 # Error rule for syntax errors

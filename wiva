@@ -7,7 +7,7 @@ import logging
 import docopt
 from mediawiki import Article
 from validation import Validation
-from squareparens.parser import parse
+from parens.parser import parse
 from wikitext_checkers import ALL_CHECKERS
 
 logger = logging.getLogger(__name__)
