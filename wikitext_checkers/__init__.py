@@ -12,7 +12,7 @@ def double_http(wikitext, validation):
 
 
 def local_articles_as_external_links(wikitext, validation):
-    host = validation.article.url.host
+    host = validation.article.url.host + '/'
     host_len = len(host)
 
     p = wikitext.find(host)

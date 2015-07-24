@@ -20,6 +20,7 @@ from wikitext_checkers import ALL_CHECKERS
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.CRITICAL)
 
+
 def str2hex(s):
     return " ".join("0x{:02x}".format(ord(c)) for c in s)
 
@@ -31,18 +32,21 @@ def cli(arguments):
         logging.root.setLevel(logging.DEBUG)
 
     if arguments['--all-articles']:
+        processed_count = 0
         wiki = Wiki(arguments['<url>'])
         for article in wiki.iterarticles(start=arguments['--from']):
-            process_article(article)
+            process_article(article, processed_count)
+            processed_count += 1
     else:
         process_article(Article(arguments['<url>']))
 
 
-def process_article(article):
-    page_url = article.url.page
-    text_msg = 'Processing: {} ...'.format(urllib.unquote(page_url))
-    logger.info(text_msg)
-    print text_msg
+def process_article(article, processed_count=None):
+    if processed_count is not None:
+        page_url = article.url.page
+        text_msg = '[{:5d}] {} ...'.format(processed_count + 1, urllib.unquote(page_url))
+        logger.info(text_msg)
+        print text_msg
 
     if arguments['--wikitext']:
         with open(arguments['--wikitext'], 'r') as f:
