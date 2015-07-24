@@ -17,7 +17,7 @@ def local_articles_as_external_links(wikitext, validation):
 
     p = wikitext.find(host)
     while p != -1:
-        validation.add_error('Local URLs written as external links', p, p + host_len)
+        validation.add_warning('Local URLs written as external links', p, p + host_len)
         p = wikitext.find(host, p + 1)
 
 
@@ -39,7 +39,7 @@ def external_links_in_double_brackets(wikitext, validation):
     RE = re.compile(r'\[\[https?://', re.I)
 
     for m in RE.finditer(wikitext):
-        validation.add_error('External link in double brackets', m.start(), m.end())
+        validation.add_warning('External link in double brackets', m.start(), m.end())
 
 
 def image_width_breaks_layout(wikitext, validation):
@@ -87,6 +87,26 @@ def misclosed_gallery(wikitext, validation):
         p = wikitext.find(pattern, p2)
 
 
+def bad_tag(wikitext, validation):
+    bad_tags = {"<b[^ri]*?>": "'''text'''",
+                "<i.*?>": "''text''",
+                "<table.*?>": "{| table content |}",
+                "<h1.*?>": "= heading =",
+                "<h2.*?>": "== heading ==",
+                "<h3.*?>": "=== heading ===",
+                "<h4.*?>": "==== heading ====",
+                "<h5.*?>": "===== heading =====",
+                "<h6.*?>": "====== heading ======"
+                }
+
+    for pattern in bad_tags:
+        replacement = bad_tags[pattern]
+        RE = re.compile(pattern)
+        for m in RE.finditer(wikitext):
+            printable_pattern = pattern.replace(".*?", "")
+            validation.add_warning('Don\'t use an html tag %s, use wikitext replacement %s instead' % (printable_pattern, replacement), m.start(), m.end())
+
+
 def parens(wikitext, validation):
     parse(wikitext, validation)
 
@@ -100,5 +120,6 @@ ALL_CHECKERS = [
     table_width_breaks_layout,
     broken_headers,
     parens,
-    misclosed_gallery
+    misclosed_gallery,
+    bad_tag
 ]

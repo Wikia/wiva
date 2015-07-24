@@ -28,14 +28,6 @@ def p_article_recursive(p):
     p[0] = p[1] + [node]
 
 
-def p_article_recursive_parens(p):
-    'article : article LPAREN seen_LPAREN article RPAREN seen_RPAREN'
-    node = ParenNode(p[3])
-    node.line = p.lineno(3)
-    node.pos = p.lexpos(3)
-    p[0] = p[1] + [node]
-
-
 def p_article_recursive_square(p):
     'article : article LSBRACE seen_LSBRACE article RSBRACE seen_RSBRACE'
     node = SquareNode(p[3])
@@ -50,17 +42,6 @@ def p_article_recursive_curly(p):
     node.line = p.lineno(3)
     node.pos = p.lexpos(3)
     p[0] = p[1] + [node]
-
-
-def p_seen_LPAREN(p):
-    'seen_LPAREN :'
-    paren_stack.append({'paren': '(', 'token': p.stack[-1]})
-
-
-def p_seen_RPAREN(p):
-    'seen_RPAREN :'
-    del paren_stack[-1]
-
 
 def p_seen_LSBRACE(p):
     'seen_LSBRACE :'

@@ -5,22 +5,12 @@ __author__ = 'alistra'
 import re
 
 tokens = (
-    'TEXT', 'LPAREN', 'RPAREN', 'LSBRACE', 'RSBRACE', 'LCBRACE', 'RCBRACE'
+    'TEXT', 'LSBRACE', 'RSBRACE', 'LCBRACE', 'RCBRACE'
 )
 
 
 def t_TEXT(t):
-    r'[^\[\]\(\)\{\}]+'
-    return t
-
-
-def t_LPAREN(t):
-    r'\('
-    return t
-
-
-def t_RPAREN(t):
-    r'\)'
+    r'[^\[\]\{\}]+'
     return t
 
 
