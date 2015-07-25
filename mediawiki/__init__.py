@@ -3,9 +3,10 @@ import copy
 import logging
 import urllib
 import urlparse
+import sys
 
 import requests
-import sys
+import requests.adapters
 
 logger = logging.getLogger(__name__)
 
@@ -49,16 +50,22 @@ class Url(object):
 
 
 class Article(object):
-    def __init__(self, url):
+    def __init__(self, url, session=None):
         if not isinstance(url, Url):
             url = Url(url)
         self.url = url
         self._wikitext = None
 
+        if not session:
+            self.session = requests.Session()
+            self.session.mount('http://', requests.adapters.HTTPAdapter(max_retries=5))
+        else:
+            self.session = session
+
     @property
     def wikitext(self):
         if self._wikitext is None:
-            r = requests.get(self.url.wikitext_url)
+            r = self.session.get(self.url.wikitext_url)
             r.raise_for_status()
             self._wikitext = r.content.decode('utf-8')
         return self._wikitext
@@ -69,32 +76,47 @@ class Wiki(object):
         if not isinstance(url, Url):
             url = Url(url)
         self.url = url
+        self.session = requests.Session()
+        self.session.mount('http://', requests.adapters.HTTPAdapter(max_retries=5))
+
+    def next_page_url(self, base_query_url, response):
+        try:
+            if 'query-continue' in response:
+                apfrom = response['query-continue']['allpages']['apfrom']
+                apfrom = self.__fix_encoding(apfrom)
+                apfrom = urllib.unquote(apfrom)
+                return base_query_url + '&' + urllib.urlencode({'apfrom': apfrom})
+            else:
+                return None
+        except UnicodeError:
+            return None
 
     def iterarticles(self, start=None):
         base_query_url = self.url.host + '/api.php?action=query&list=allpages&format=json&aplimit=100'
         query_url = base_query_url
         if start is not None:
             query_url += '&' + urllib.urlencode({'apfrom': start})
-        while True:
+
+        while query_url:
             # print >> sys.stderr, query_url
-            response = requests.get(query_url)
+            try:
+                response = self.session.get(query_url)
+            except requests.exceptions.RequestException:
+                break
+
             response = response.json()
             if 'query' not in response:
                 print >> sys.stderr, response
+                break
             for page_data in response['query']['allpages']:
                 try:
                     page_url = self.url.new_page(self.__fix_encoding(page_data['title']))
                 except UnicodeEncodeError:
                     logger.error('Invalid title skipped')
                     continue
-                yield Article(page_url)
-            if 'query-continue' in response:
-                apfrom = response['query-continue']['allpages']['apfrom']
-                apfrom = self.__fix_encoding(apfrom)
-                apfrom = urllib.unquote(apfrom)
-                query_url = base_query_url + '&' + urllib.urlencode({'apfrom': apfrom})
-            else:
-                break
+                yield Article(page_url, session=self.session)
+
+            query_url = self.next_page_url(base_query_url, response)
 
     def __fix_encoding(self, s):
         s = s.replace('?', '%3F')

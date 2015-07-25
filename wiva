@@ -77,21 +77,10 @@ def process_article(article, processed_count=None, output='plain'):
         with open(arguments['--wikitext']) as f:
             article._wikitext = f.read()
 
-    retries_left = 4
-    wikitext = None
-    while True:
-        try:
-            wikitext = article.wikitext
-        except requests.ConnectionError:
-            retries_left -= 1
-            if retries_left <= 0:
-                return {} if output == 'dict' else ""
-            logger.debug('Request failed, sleeping for 3 seconds...')
-            time.sleep(3)
-        except requests.exceptions.RequestException:
-            return {} if output == 'dict' else ""
-        else:
-            break
+    try:
+        wikitext = article.wikitext
+    except requests.exceptions.RequestException:
+        return {} if output == 'dict' else ""
 
     logger.info('  * wikitext length = {}'.format(len(wikitext)))
 
