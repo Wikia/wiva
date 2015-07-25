@@ -46,9 +46,11 @@ def cli(arguments):
                 else:
                     if article_result:
                         print article_result
-        except:
+        except KeyboardInterrupt:
+            pass
+        finally:
             if generate_json:
-                print pretty_json({"reports": result})
+                print pretty_json({wiki.url.host: result})
     else:
 
         if generate_json:
