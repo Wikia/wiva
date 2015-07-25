@@ -101,3 +101,6 @@ You can also report this as json using the `--json` flag. This flag also works f
 	    }
 	}
 
+## Saved Outputs
+
+* [Elder Scrolls Wikia](https://gist.github.com/alistra/8a73185de04db1d573c6) - 290 errors, 29406 warnings generated
