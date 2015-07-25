@@ -1,0 +1,5 @@
+#!/bin/bash
+for i in `cat top/top`
+do
+    ./wiva http://$i/wiki/a --all-articles --json > top/$i.json &
+done

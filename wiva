@@ -38,13 +38,16 @@ def cli(arguments):
         result = {}
         try:
             for processed_count, article in enumerate(wiki.iterarticles(start=arguments['--from'])):
-                article_result = process_article(article, processed_count, output='dict' if generate_json else 'plain')
+                try:
+                    article_result = process_article(article, processed_count, output='dict' if generate_json else 'plain')
 
-                if generate_json:
-                    result.update(article_result)
-                else:
-                    if article_result:
-                        print article_result
+                    if generate_json:
+                        result.update(article_result)
+                    else:
+                        if article_result:
+                            print article_result
+                except UnicodeEncodeError:
+                    continue
         except KeyboardInterrupt:
             pass
         finally:
@@ -85,6 +88,8 @@ def process_article(article, processed_count=None, output='plain'):
                 raise
             logger.debug('Request failed, sleeping for 3 seconds...')
             time.sleep(3)
+        except (requests.exceptions.HTTPError, requests.exceptions.TooManyRedirects):
+            return {} if output == 'dict' else ""
         else:
             break
 
