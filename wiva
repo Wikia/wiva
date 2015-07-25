@@ -2,10 +2,9 @@
 # coding=utf-8
 """
 Usage: wiva <url> [ <revision> ]
-            [ --all-articles ] [ --from=<from> ]
-            [ --text-only ]
+            [ --all-articles [ --from=<from> ]]
             [ --wikitext=<wikitext_file> ]
-            [ --verbose ] [ --debug ] [--json]
+            [ --debug ] [--json]
 """
 import json
 import logging
