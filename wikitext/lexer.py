@@ -1,5 +1,6 @@
 # coding=utf-8
 import re
+import sys
 
 tokens = (
     'NAME', 'NUMBER',
@@ -54,7 +55,7 @@ def t_newline(t):
 
 
 def t_error(t):
-    print("Illegal character '%s'" % t.value[0])
+    print >>sys.stderr, ("Illegal character '%s'" % t.value[0])
     t.lexer.skip(1)
 
 

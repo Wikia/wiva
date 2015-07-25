@@ -1,4 +1,5 @@
 # coding=utf-8
+import json
 import termcolor
 
 
@@ -66,3 +67,11 @@ class Message(object):
 
     def __expand_tabs(self, s):
         return s.replace("\t", "  ")
+
+    def __iter__(self):
+        dict_dump = {'severity': self.severity, 'text': self.text, 'start': self.start}
+        if self.end:
+            dict_dump['end'] = self.end
+
+        for key, value in dict_dump.iteritems():
+            yield key, value

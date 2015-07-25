@@ -1,11 +1,14 @@
+# coding=utf-8
 import copy
 import logging
 import urllib
 import urlparse
-import requests
 
+import requests
+import sys
 
 logger = logging.getLogger(__name__)
+
 
 def str2hex(s):
     return " ".join("0x{:02x}".format(ord(c)) for c in s)
@@ -73,11 +76,11 @@ class Wiki(object):
         if start is not None:
             query_url += '&' + urllib.urlencode({'apfrom': start})
         while True:
-            # print query_url
+            # print >> sys.stderr, query_url
             response = requests.get(query_url)
             response = response.json()
             if not 'query' in response:
-                print response
+                print >>sys.stderr, response
             for page_data in response['query']['allpages']:
                 try:
                     page_url = self.url.new_page(self.__fix_encoding(page_data['title']))
@@ -89,7 +92,7 @@ class Wiki(object):
                 apfrom = response['query-continue']['allpages']['apfrom']
                 apfrom = self.__fix_encoding(apfrom)
                 apfrom = urllib.unquote(apfrom)
-                query_url = base_query_url + '&' + urllib.urlencode({'apfrom':apfrom})
+                query_url = base_query_url + '&' + urllib.urlencode({'apfrom': apfrom})
             else:
                 break
 
@@ -98,18 +101,20 @@ class Wiki(object):
         s = s.encode('iso-8859-1')
         s = self.__fix_broken_url_encodes(s)
         s = unicode(s, encoding='iso-8859-1')
-        s = s.encode('utf-8')
+        s = s.encode()
         return s
 
-    def __fix_broken_url_encodes(self, s):
+    @staticmethod
+    def __fix_broken_url_encodes(s):
         def is_hex_char(z):
             z = z.lower()
-            return z >= '0' and z <= '9' or z >= 'a' and z <= 'f'
+            return '0' <= z <= '9' or 'a' <= z <= 'f'
+
         c = list(s)
         l = len(c)
         for i in range(l):
             if c[i] == '%':
-                h = c[i+1:i+3]
+                h = c[i + 1:i + 3]
                 if len(h) < 2 or not is_hex_char(h[0]) or not is_hex_char(h[1]):
                     c[i] = '%25'
         return ''.join(c)

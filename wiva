@@ -5,14 +5,16 @@ Usage: wiva <url> [ <revision> ]
             [ --all-articles ] [ --from=<from> ]
             [ --text-only ]
             [ --wikitext=<wikitext_file> ]
-            [ --verbose ] [ --debug ]
+            [ --verbose ] [ --debug ] [--json]
 """
+import json
 import logging
 import urllib
 import docopt
 import requests
 import requests.adapters
 import time
+import sys
 from mediawiki import Article, Wiki
 from validation import Validation
 from wikitext_checkers import ALL_CHECKERS
@@ -31,25 +33,44 @@ def cli(arguments):
     if arguments['--debug']:
         logging.root.setLevel(logging.DEBUG)
 
+    generate_json = arguments['--json']
     if arguments['--all-articles']:
-        processed_count = 0
         wiki = Wiki(arguments['<url>'])
-        for article in wiki.iterarticles(start=arguments['--from']):
-            process_article(article, processed_count)
-            processed_count += 1
+        result = {}
+        try:
+            for processed_count, article in enumerate(wiki.iterarticles(start=arguments['--from'])):
+                article_result = process_article(article, processed_count, output='dict' if generate_json else 'plain')
+
+                if generate_json:
+                    result.update(article_result)
+                else:
+                    if article_result:
+                        print article_result
+        except:
+            if generate_json:
+                print pretty_json({"reports": result})
     else:
-        process_article(Article(arguments['<url>']))
+
+        if generate_json:
+            article_dict = process_article(Article(arguments['<url>']), output='dict')
+            print pretty_json(article_dict)
+        else:
+            print process_article(Article(arguments['<url>']))
 
 
-def process_article(article, processed_count=None):
+def pretty_json(article_dict):
+    return json.dumps(article_dict, sort_keys=True, indent=4, separators=(',', ': '))
+
+
+def process_article(article, processed_count=None, output='plain'):
     if processed_count is not None:
         page_url = article.url.page
         text_msg = '[{:5d}] {} ...'.format(processed_count + 1, urllib.unquote(page_url))
         logger.info(text_msg)
-        print text_msg
+        print >> sys.stderr, text_msg
 
     if arguments['--wikitext']:
-        with open(arguments['--wikitext'], 'r') as f:
+        with open(arguments['--wikitext']) as f:
             article._wikitext = f.read()
 
     retries_left = 4
@@ -69,9 +90,24 @@ def process_article(article, processed_count=None):
     logger.info('  * wikitext length = {}'.format(len(wikitext)))
 
     validation = Validation(article, ALL_CHECKERS)
-    for message in validation.messages:
-        print message
-    return
+
+    if output == 'dict':
+        json_dump = []
+        for message in validation.messages:
+            json_dump.append(dict(message))
+
+        if json_dump:
+            return {article.url.url: json_dump}
+        else:
+            return {}
+
+    elif output == 'plain':
+
+        return "\n".join(map(str, validation.messages))
+
+    else:
+        print >> sys.stderr, "Unsupported output: %s" % output
+        raise
 
 
 if __name__ == '__main__':

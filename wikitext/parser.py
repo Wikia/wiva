@@ -162,11 +162,11 @@ def p_error(p):
 
     source_text = lexer.lexdata[prev_line_pos:next_line_pos]
 
-    print colored("Syntax error in input!", "red")
-    print
+    print >>sys.stderr, colored("Syntax error in input!", "red")
+    print >>sys.stderr,
 
-    print colored(source_text, "yellow").encode('utf-8')
-    print
+    print >>sys.stderr, colored(source_text, "yellow").encode('utf-8')
+    print >>sys.stderr,
 
 
 # Build the parser
