@@ -1,6 +1,7 @@
 # coding=utf-8
 import copy
 import logging
+import traceback
 import urllib
 import urlparse
 import sys
@@ -88,7 +89,10 @@ class Wiki(object):
                 return base_query_url + '&' + urllib.urlencode({'apfrom': apfrom})
             else:
                 return None
-        except UnicodeError:
+        except UnicodeError as e:
+            print e
+            print traceback.format_exc()
+            print >>sys.stderr, "Unicode error"
             return None
 
     def iterarticles(self, start=None):
@@ -111,7 +115,7 @@ class Wiki(object):
             for page_data in response['query']['allpages']:
                 try:
                     page_url = self.url.new_page(self.__fix_encoding(page_data['title']))
-                except UnicodeEncodeError:
+                except UnicodeError:
                     logger.error('Invalid title skipped')
                     continue
                 yield Article(page_url, session=self.session)
@@ -120,10 +124,19 @@ class Wiki(object):
 
     def __fix_encoding(self, s):
         s = s.replace('?', '%3F')
-        s = s.encode('iso-8859-1')
-        s = self.__fix_broken_url_encodes(s)
-        s = unicode(s, encoding='iso-8859-1')
-        s = s.encode()
+        try:
+            tmp_s = s.encode('iso-8859-1')
+            tmp_s = self.__fix_broken_url_encodes(tmp_s)
+            tmp_s = unicode(tmp_s, encoding='iso-8859-1')
+            s = tmp_s
+        except UnicodeError:
+            pass
+
+        try:
+            tmp_s = s.encode('utf-8')
+            s = tmp_s
+        except UnicodeError:
+            pass
         return s
 
     @staticmethod
