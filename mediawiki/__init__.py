@@ -79,8 +79,8 @@ class Wiki(object):
             # print >> sys.stderr, query_url
             response = requests.get(query_url)
             response = response.json()
-            if not 'query' in response:
-                print >>sys.stderr, response
+            if 'query' not in response:
+                print >> sys.stderr, response
             for page_data in response['query']['allpages']:
                 try:
                     page_url = self.url.new_page(self.__fix_encoding(page_data['title']))

@@ -85,10 +85,10 @@ def process_article(article, processed_count=None, output='plain'):
         except requests.ConnectionError:
             retries_left -= 1
             if retries_left <= 0:
-                raise
+                return {} if output == 'dict' else ""
             logger.debug('Request failed, sleeping for 3 seconds...')
             time.sleep(3)
-        except (requests.exceptions.HTTPError, requests.exceptions.TooManyRedirects):
+        except requests.exceptions.RequestException:
             return {} if output == 'dict' else ""
         else:
             break
