@@ -103,7 +103,7 @@ You can also report this as json using the `--json` flag. This flag also works f
 
 ## Saved Outputs
 
-* [Elder Scrolls Wikia](https://gist.github.com/alistra/8a73185de04db1d573c6) - 290 errors, 29406 warnings generated
+* [Elder Scrolls](https://gist.github.com/alistra/8a73185de04db1d573c6) - 290 errors, 29406 warnings generated
 * [Spanish Pokemon](https://gist.github.com/alistra/ae129e5fa1a8cdd4056b) - 564 errors, 68341 warnings generated
 * [Fallout](https://gist.github.com/alistra/ca8215e6681e51982efa) - 235 errors, 9107 warnings generated
 * [Yugioh](https://gist.github.com/alistra/09333a50a7edf5f5935f) - 192 errors, 6255 warnings generated
