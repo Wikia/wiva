@@ -108,5 +108,6 @@ You can also report this as json using the `--json` flag. This flag also works f
 * [Fallout](https://gist.github.com/alistra/ca8215e6681e51982efa) - 235 errors, 9107 warnings generated
 * [Yugioh](https://gist.github.com/alistra/09333a50a7edf5f5935f) - 192 errors, 6255 warnings generated
 * [Runescape](https://gist.github.com/a5cc79d175495d5268d8) - 590 errors, 8024 warnings generated
+* [Russian Terraria)(https://gist.github.com/5595a2b83a7b8a204b6d) - 24 errors, 3540 warnings generated
 
 
