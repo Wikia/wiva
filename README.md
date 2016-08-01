@@ -6,7 +6,7 @@
 
 	cd wiva
 	sudo pip -r requirements.txt
-	
+
 ## Running
 	Usage: wiva <url> [ <revision> ]
             [ --all-articles [ --from=<from> ]]
